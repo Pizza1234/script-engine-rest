@@ -1,22 +1,33 @@
 package com.script.engine.entity;
 
+import com.script.engine.controller.ScriptController;
+import org.springframework.hateoas.Identifiable;
+import org.springframework.hateoas.Link;
+import org.springframework.util.Assert;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @XmlRootElement
-public class Script {
+public class Script implements Identifiable<Long> {
 
-  private long id;
+  private Long id;
   private Status status;
   private String body;
   private String result;
   private String error;
+  private final List<Link> links = new ArrayList<>();
 
   public Script() {}
 
-  public Script(long id, String body) {
+  public Script(Long id, String body) {
     this.id = id;
     this.body = body;
     this.status = Status.IN_PROCESS;
+    links.add(linkTo(ScriptController.class).slash(id).withSelfRel());
   }
 
   public Script(String result, String error) {
@@ -30,6 +41,7 @@ public class Script {
     this.status = script.status;
     this.result = script.result;
     this.error = script.error;
+    links.add(linkTo(ScriptController.class).slash(id).withSelfRel());
 
   }
 
@@ -39,9 +51,10 @@ public class Script {
     this.status = script.status;
     this.result = result;
     this.error = error;
+    links.add(linkTo(ScriptController.class).slash(id).withSelfRel());
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -49,7 +62,7 @@ public class Script {
     return body;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -79,5 +92,14 @@ public class Script {
 
   public void setError(String error) {
     this.error = error;
+  }
+
+  public void add(Link link) {
+    Assert.notNull(link, "Link must not be null!");
+    this.links.add(link);
+  }
+
+  public List<Link> getLinks() {
+    return links;
   }
 }

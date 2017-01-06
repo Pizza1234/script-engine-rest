@@ -43,7 +43,8 @@ public class ScriptExecutorService implements ScriptEngineService{
       t.join();
     } catch (InterruptedException e) {
       script.setStatus(Status.INTERRUPTED);
-      script.setResult(e.getMessage());
+      script.setResult(script.getResult());
+      script.setError(script.getError());
       e.printStackTrace();
     }
 
@@ -83,7 +84,7 @@ public class ScriptExecutorService implements ScriptEngineService{
         .ifPresent(task -> task.stop());
     return Optional.ofNullable(scriptEngineTask)
         .map(task -> new Script(task.getScript(), task.getResult(), task.getError()))
-        .orElse(new Script(null,"No script with id: " + id));
+        .orElse(new Script("", "No script with id: " + id));
   }
 
   @Override
@@ -97,7 +98,7 @@ public class ScriptExecutorService implements ScriptEngineService{
   public Script getScript(long id) {
     return Optional.ofNullable(scriptEngineTaskRepository.find(id))
         .map(task -> new Script(task.getScript(), task.getResult(), task.getError()))
-        .orElse(new Script(null, "No script with id: " + id));
+        .orElse(new Script("", "No script with id: " + id));
   }
 
   public List<Script> getScripts() {
